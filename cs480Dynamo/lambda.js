@@ -3,7 +3,7 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = function (event, context, callback) {
 
-    var randomToken = sha1(Math.random());
+    var randomToken = "something"//sha1(Math.random());
 
     ddb.put({
         TableName: 'users',
