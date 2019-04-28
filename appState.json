@@ -8,7 +8,8 @@
         "type": "DIRECTORY",
         "isDirectory": true,
         "children": [
-          "46d45ab9-af99-402c-9f05-604b2e564de7"
+          "46d45ab9-af99-402c-9f05-604b2e564de7",
+          "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3"
         ],
         "isRemovable": false,
         "filePath": "cs480Dynamo"
@@ -22,7 +23,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    callback(null, { \"message\": \"Successfully executed\" });\n\n\n    ddb.put({\n        TableName: 'users',\n        Item: { 'username': event.username, 'password': event.password }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\n    \n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    var randomToken = sha1(Math.random());\n\n    ddb.put({\n        TableName: 'users',\n        Item: { \n            'username': event.username,\n            'password': event.password,\n            'authtoken': randomToken}\n    }).promise().then(function (data) {\n        callback(null, { \"message\": \"user: \"+event.username+\" pass \"+event.password+\" returned data: \"+data });\n        //your logic goes here\n    }).catch(function (err) {\n        callback(null, { \"message\": \"something went wrong \"+err });\n        //handle error\n    });\n\n    \n\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testcreateDynamoUserpost",
@@ -44,14 +45,39 @@
           "memory": 128,
           "layers": []
         }
+      },
+      "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3": {
+        "id": "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
+        "parent": "91848b40-062a-4494-9d63-c8c87e042976",
+        "name": "dynamoDemoLogin.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "cs480Dynamo/dynamoDemoLogin.js",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    ddb.get({\n        TableName: 'users',\n        Key: { 'username': event.username }\n    }).promise().then(function (data) {\n        if(event.password == data.password){\n            callback(null, { \"message\": data.authtoken });\n        }else{\n            allback(null, { \"message\": \"bad password\" });\n        }\n    }).catch(function (err) {\n        \n    callback(null, { \"message\": \"some weird error: \"+err });\n    });\n\n\n\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1testloginDynamoUserpost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        }
       }
     },
     "deletedFiles": [],
     "rootNode": "91848b40-062a-4494-9d63-c8c87e042976",
     "openFiles": [
-      "46d45ab9-af99-402c-9f05-604b2e564de7"
+      "46d45ab9-af99-402c-9f05-604b2e564de7",
+      "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3"
     ],
-    "currentFileId": "46d45ab9-af99-402c-9f05-604b2e564de7",
+    "currentFileId": "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
     "resources": {
       "apigusEast1testcreateDynamoUserpost": {
         "name": "apigusEast1testcreateDynamoUserpost",
@@ -108,7 +134,7 @@
         "type": "DynamoDB",
         "config": {
           "mode": 1,
-          "operation": "put",
+          "operation": "get",
           "table": {
             "arn": "arn:aws:dynamodb:us-east-1:997927943405:table/users",
             "name": "users",
@@ -120,11 +146,10 @@
             "mode": 1
           },
           "parameters": {
-            "Key": {},
-            "Item": {
-              "username": "CHANGETHIS",
-              "password": "THISthispassword"
+            "Key": {
+              "username": "namehere"
             },
+            "Item": {},
             "ExpressionAttributeValues": {}
           },
           "triggerParams": {},
@@ -133,6 +158,33 @@
             "validity": true
           },
           "valid": true
+        },
+        "globallyEditable": false
+      },
+      "apigusEast1testloginDynamoUserpost": {
+        "name": "apigusEast1testloginDynamoUserpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 1,
+          "apiName": "test",
+          "apiId": "7rigu1t3sg",
+          "endpointType": "EDGE",
+          "rootResourceId": "8fatwgybp2",
+          "existingResources": {
+            "/createUser": "7ie9s0",
+            "/": "8fatwgybp2",
+            "/createDynamoUser": "znh4pb"
+          },
+          "resourceMode": 0,
+          "resourceName": "loginDynamoUser",
+          "resourcePath": "/loginDynamoUser",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 1,
+          "stageName": "testStage",
+          "stageDeploymentId": "jae24l"
         },
         "globallyEditable": false
       }
@@ -171,12 +223,12 @@
     "repoUrl": "https://github.com/Diamondrubix/WildFire",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556473029788
+    "lastSave": 1556475280075
   },
   "VCS_STATE": {
     "provider": "GitHub",
     "repo": {
-      "name": "cs480Dynamo",
+      "name": "dynamoDemocs480",
       "url": "https://github.com/Diamondrubix/dynamoDemocs480"
     }
   }
