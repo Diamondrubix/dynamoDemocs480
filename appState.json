@@ -55,7 +55,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/dynamoDemoLogin.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    ddb.get({\n        TableName: 'users',\n        Key: { 'username': event.username }\n    }).promise().then(function (data) {\n        if (event.password == data.password) {\n            callback(null, { \"message\": data.authtoken });\n        } else {\n            callback(null, { \"message\": \"bad password\" + JSON.stringify(data) });\n        }\n    }).catch(function (err) {\n\n        callback(null, { \"message\": \"some weird error: \" + err });\n    });\n\n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n/*\n    ddb.get({\n        TableName: 'users',\n        Key: { 'username': event.username }\n    }).promise().then(function (data) {\n        if (event.password == data.Item.password) {\n            callback(null, { \"message\": data.Item.authtoken });\n        } else {\n            callback(null, { \"message\": \"bad password\" + JSON.stringify(data) });\n        }\n    }).catch(function (err) {\n\n        callback(null, { \"message\": \"some weird error: \" + err });\n    });\n    */\n\n\n/*\n    ddb.query({\n        TableName: 'users'\n    }).promise().then(function (data) {\n        \n            callback(null, { \"message\": JSON.stringify(data)});\n    }).catch(function (err) {\n        //handle error\n    });\n*/\n\n    ddb.scan({\n        TableName: 'users'\n    }).promise().then(function (data) {\n         callback(null, { \"message\": JSON.stringify(data)});\n    }).catch(function (err) {\n         callback(null, { \"message\": err});\n    });\n\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testloginDynamoUserpost",
@@ -134,7 +134,7 @@
         "type": "DynamoDB",
         "config": {
           "mode": 1,
-          "operation": "query",
+          "operation": "get",
           "table": {
             "arn": "arn:aws:dynamodb:us-east-1:997927943405:table/users",
             "name": "users",
@@ -146,10 +146,11 @@
             "mode": 1
           },
           "parameters": {
-            "Key": {},
+            "Key": {
+              "username": "whatgoeshere"
+            },
             "Item": {},
-            "ExpressionAttributeValues": {},
-            "KeyConditionExpression": ""
+            "ExpressionAttributeValues": {}
           },
           "triggerParams": {},
           "validator": {
@@ -222,7 +223,7 @@
     "repoUrl": "https://github.com/Diamondrubix/WildFire",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556488378550
+    "lastSave": 1556489256921
   },
   "VCS_STATE": {
     "provider": "GitHub",
