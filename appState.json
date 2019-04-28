@@ -1,0 +1,183 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "91848b40-062a-4494-9d63-c8c87e042976": {
+        "id": "91848b40-062a-4494-9d63-c8c87e042976",
+        "parent": null,
+        "name": "cs480Dynamo",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "46d45ab9-af99-402c-9f05-604b2e564de7"
+        ],
+        "isRemovable": false,
+        "filePath": "cs480Dynamo"
+      },
+      "46d45ab9-af99-402c-9f05-604b2e564de7": {
+        "id": "46d45ab9-af99-402c-9f05-604b2e564de7",
+        "parent": "91848b40-062a-4494-9d63-c8c87e042976",
+        "name": "lambda.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "cs480Dynamo/lambda.js",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    callback(null, { \"message\": \"Successfully executed\" });\n\n\n    ddb.put({\n        TableName: 'users',\n        Item: { 'username': event.username, 'password': event.password }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\n    \n\n\n\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1testcreateDynamoUserpost",
+            "config": {}
+          },
+          {
+            "resourceName": "apigusEast1testcreateUserpost",
+            "config": {}
+          },
+          {
+            "resourceName": "apigusEast1testcreateUserpost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        }
+      }
+    },
+    "deletedFiles": [],
+    "rootNode": "91848b40-062a-4494-9d63-c8c87e042976",
+    "openFiles": [
+      "46d45ab9-af99-402c-9f05-604b2e564de7"
+    ],
+    "currentFileId": "46d45ab9-af99-402c-9f05-604b2e564de7",
+    "resources": {
+      "apigusEast1testcreateDynamoUserpost": {
+        "name": "apigusEast1testcreateDynamoUserpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 1,
+          "apiName": "test",
+          "apiId": "7rigu1t3sg",
+          "endpointType": "EDGE",
+          "rootResourceId": "8fatwgybp2",
+          "existingResources": {
+            "/": "8fatwgybp2"
+          },
+          "resourceMode": 0,
+          "resourceName": "createDynamoUser",
+          "resourcePath": "/createDynamoUser",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 1,
+          "stageName": "testStage",
+          "stageDeploymentId": "2q955h"
+        },
+        "globallyEditable": false
+      },
+      "apigusEast1testcreateUserpost": {
+        "name": "apigusEast1testcreateUserpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 1,
+          "apiName": "test",
+          "apiId": "7rigu1t3sg",
+          "endpointType": "EDGE",
+          "rootResourceId": "8fatwgybp2",
+          "existingResources": {
+            "/": "8fatwgybp2"
+          },
+          "resourceMode": 0,
+          "resourceName": "createUser",
+          "resourcePath": "/createUser",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 1,
+          "stageName": "testStage",
+          "stageDeploymentId": "2q955h"
+        },
+        "globallyEditable": false
+      },
+      "ddbusers": {
+        "name": "ddbusers",
+        "type": "DynamoDB",
+        "config": {
+          "mode": 1,
+          "operation": "put",
+          "table": {
+            "arn": "arn:aws:dynamodb:us-east-1:997927943405:table/users",
+            "name": "users",
+            "partitionKey": "username",
+            "partitionKeyType": "S",
+            "hasSortKey": false,
+            "sortKey": "",
+            "sortKeyType": "S",
+            "mode": 1
+          },
+          "parameters": {
+            "Key": {},
+            "Item": {
+              "username": "CHANGETHIS",
+              "password": "THISthispassword"
+            },
+            "ExpressionAttributeValues": {}
+          },
+          "triggerParams": {},
+          "validator": {
+            "validatableFields": {},
+            "validity": true
+          },
+          "valid": true
+        },
+        "globallyEditable": false
+      }
+    },
+    "customTemplate": {
+      "dialect": null,
+      "definitions": {}
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {
+        "aws-sdk": {
+          "name": "aws-sdk",
+          "version": "2.176.0",
+          "dev": true,
+          "notRemovable": false
+        }
+      }
+    }
+  },
+  "PROJECT_META": {
+    "projectName": "cs480Dynamo",
+    "projectDescription": "I choose to explore dynamo db for my cs480 final project. This is a demo program to show off the database",
+    "projectVersion": "1.0.0",
+    "projectRegion": "us-east-1",
+    "repoName": "WildFire",
+    "repoUrl": "https://github.com/Diamondrubix/WildFire",
+    "platform": "AWS",
+    "platformRegions": {},
+    "lastSave": 1556473029788
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "cs480Dynamo",
+      "url": "https://github.com/Diamondrubix/dynamoDemocs480"
+    }
+  }
+}
