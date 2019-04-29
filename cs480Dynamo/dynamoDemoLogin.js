@@ -11,7 +11,7 @@ exports.handler = function (event, context, callback) {
             if (event.password == data.Item.password) {
                 callback(null, { "message": data.Item.authtoken });
             } else {
-                callback(null, { "message": "bad password" + JSON.stringify(data) });
+                callback(null, { "AuthToken": "bad password" + JSON.stringify(data) });
             }
         }).catch(function (err) {
     
