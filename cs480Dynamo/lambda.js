@@ -1,9 +1,10 @@
 let AWS = require('aws-sdk');
+var sha1 = require('sha1');
 const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = function (event, context, callback) {
 
-    var randomToken = "something"//sha1(Math.random());
+    var randomToken = sha1(Math.random());
 
     ddb.put({
         TableName: 'users',
