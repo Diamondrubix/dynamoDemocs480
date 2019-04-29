@@ -23,7 +23,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nvar sha1 = require('sha1');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    var randomToken = sha1(Math.random());\n\n    ddb.put({\n        TableName: 'users',\n        Item: { \n            'username': event.username,\n            'password': event.password,\n            'authtoken': randomToken}\n    }).promise().then(function (data) {\n        callback(null, { \"message\": \"user: \"+event.username+\" pass \"+event.password+\" returned data: \"+data });\n        //your logic goes here\n    }).catch(function (err) {\n        callback(null, { \"message\": \"something went wrong \"+err });\n        //handle error\n    });\n\n    \n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nvar sha1 = require('sha1');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    var randomToken = Math.random()//sha1(Math.random()); //il figure out how to import libraries later, this project was not about lambda anyway\n\n    ddb.put({\n        TableName: 'users',\n        Item: { \n            'username': event.username,\n            'password': event.password,\n            'authtoken': randomToken}\n    }).promise().then(function (data) {\n        callback(null, { \"message\": \"user: \"+event.username+\" pass \"+event.password+\" returned data: \"+data });\n        //your logic goes here\n    }).catch(function (err) {\n        callback(null, { \"message\": \"something went wrong \"+err });\n        //handle error\n    });\n\n    \n\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testcreateDynamoUserpost",
@@ -55,7 +55,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/dynamoDemoLogin.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    /*\n        ddb.get({\n            TableName: 'users',\n            Key: { 'username': event.username }\n        }).promise().then(function (data) {\n            if (event.password == data.Item.password) {\n                callback(null, { \"message\": data.Item.authtoken });\n            } else {\n                callback(null, { \"message\": \"bad password\" + JSON.stringify(data) });\n            }\n        }).catch(function (err) {\n    \n            callback(null, { \"message\": \"some weird error: \" + err });\n        });\n        */\n\n    ddb.query({\n        TableName: 'users'\n        , ExpressionAttributeValues: { ':username': 'TEST', ':favoriteFood': 'padThai' }, KeyConditionExpression: ' S :username and  S :favoriteFood', FilterExpression: 'password S :favoriteFood'\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\n\n    ddb.query({\n        TableName: 'users'\n    }).promise().then(function (data) {\n\n        callback(null, { \"message\": JSON.stringify(data) });\n    }).catch(function (err) {\n        //handle error\n        callback(null, { \"message\": err });\n    });\n\n    \n\n    /*\n        ddb.scan({\n            TableName: 'users'\n        }).promise().then(function (data) {\n             callback(null, { \"message\": JSON.stringify(data)});\n        }).catch(function (err) {\n             callback(null, { \"message\": err});\n        });\n        */\n\n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n        ddb.get({\n            TableName: 'users',\n            Key: { 'username': event.username }\n        }).promise().then(function (data) {\n            if (event.password == data.Item.password) {\n                callback(null, { \"message\": data.Item.authtoken });\n            } else {\n                callback(null, { \"message\": \"bad password\" + JSON.stringify(data) });\n            }\n        }).catch(function (err) {\n    \n            callback(null, { \"message\": \"some weird error: \" + err });\n        });\n        \n/*\n    ddb.query({\n        TableName: 'users'\n        , ExpressionAttributeValues: { ':username': 'TEST', ':favoriteFood': 'padThai' }, KeyConditionExpression: ' S :username and  S :favoriteFood', FilterExpression: 'password S :favoriteFood'\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\n\n    ddb.query({\n        TableName: 'users'\n    }).promise().then(function (data) {\n\n        callback(null, { \"message\": JSON.stringify(data) });\n    }).catch(function (err) {\n        //handle error\n        callback(null, { \"message\": err });\n    });\n\n    */\n\n    /*\n        ddb.scan({\n            TableName: 'users'\n        }).promise().then(function (data) {\n             callback(null, { \"message\": JSON.stringify(data)});\n        }).catch(function (err) {\n             callback(null, { \"message\": err});\n        });\n        */\n\n\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testloginDynamoUserpost",
@@ -77,7 +77,7 @@
       "46d45ab9-af99-402c-9f05-604b2e564de7",
       "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3"
     ],
-    "currentFileId": "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
+    "currentFileId": "46d45ab9-af99-402c-9f05-604b2e564de7",
     "resources": {
       "apigusEast1testcreateDynamoUserpost": {
         "name": "apigusEast1testcreateDynamoUserpost",
@@ -224,7 +224,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556524410723
+    "lastSave": 1556524465919
   },
   "VCS_STATE": {
     "provider": "GitHub",

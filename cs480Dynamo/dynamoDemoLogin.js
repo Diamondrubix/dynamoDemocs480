@@ -3,7 +3,7 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = function (event, context, callback) {
 
-    /*
+    
         ddb.get({
             TableName: 'users',
             Key: { 'username': event.username }
@@ -17,8 +17,8 @@ exports.handler = function (event, context, callback) {
     
             callback(null, { "message": "some weird error: " + err });
         });
-        */
-
+        
+/*
     ddb.query({
         TableName: 'users'
         , ExpressionAttributeValues: { ':username': 'TEST', ':favoriteFood': 'padThai' }, KeyConditionExpression: ' S :username and  S :favoriteFood', FilterExpression: 'password S :favoriteFood'
@@ -39,7 +39,7 @@ exports.handler = function (event, context, callback) {
         callback(null, { "message": err });
     });
 
-    
+    */
 
     /*
         ddb.scan({

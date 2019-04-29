@@ -4,7 +4,7 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = function (event, context, callback) {
 
-    var randomToken = sha1(Math.random());
+    var randomToken = Math.random()//sha1(Math.random()); //il figure out how to import libraries later, this project was not about lambda anyway
 
     ddb.put({
         TableName: 'users',
