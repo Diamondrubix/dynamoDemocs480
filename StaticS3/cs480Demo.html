@@ -1,0 +1,85 @@
+
+<body>
+some text to show the webpage
+<!--<input type="button" value="activateLambda" onclick="lambdainvoke();">-->
+</body>
+
+<form action="action_page.php">
+    <div class="container">
+        <p>Please fill in this form to create an account.</p>
+        <hr>
+
+        <br>username</br></label>
+        <input type="text" placeholder="Enter UserName" id="username" name="username" required>
+
+        <br>Password</br></label>
+        <input type="password" placeholder="Enter Password" id="password" name="psw" required>
+        <br>
+        <input type="button" value="login" onclick="login();">
+        <input type="button" value="makeRequest" onclick="makeCorsRequest(1,function(body){
+            secondary(body)
+        });">
+    </div>
+</form>
+
+
+<script>
+    url = 'https://7rigu1t3sg.execute-api.us-east-1.amazonaws.com/testStage';
+
+    function login(){
+        makeCorsRequest("1", function(result){
+            console.log(result);
+        })
+    }
+    // Make the actual CORS request.
+    // Create the XHR object.
+    function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+            // XHR for Chrome/Firefox/Opera/Safari.
+            xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+            // XDomainRequest for IE.
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+        } else {
+            // CORS not supported.
+            xhr = null;
+        }
+        return xhr;
+    }
+    // Helper method to parse the title tag from the response.
+    function getTitle(text) {
+        return text.match('<title>(.*)?</title>');
+    }
+    function makeCorsRequest(body, callback) {
+        // This is a sample server that supports CORS.
+
+        var xhr = createCORSRequest('POST', url);
+        if (!xhr) {
+            alert('CORS not supported');
+            return;
+        }
+
+        // Response handlers.
+        xhr.onload = function() {
+            var text = xhr.responseText;
+            var title = getTitle(text);
+            //console.log('header is '+title);
+            var resp = xhr.responseText;
+            callback(resp)
+            //alert('Response from CORS request to ' + url + ': ' + title);
+        };
+
+        xhr.onerror = function() {
+            alert('Woops, there was an error making the request.');
+        };
+        /*
+        xhr.setRequestHeader(
+            "Authorization", idToken   //If your header name has spaces or any other char not appropriate
+        );
+         */
+        xhr.send(body);
+        checkForIP = true;
+    }
+</script>
