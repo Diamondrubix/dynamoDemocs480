@@ -9,7 +9,8 @@
         "isDirectory": true,
         "children": [
           "46d45ab9-af99-402c-9f05-604b2e564de7",
-          "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3"
+          "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
+          "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0"
         ],
         "isRemovable": false,
         "filePath": "cs480Dynamo"
@@ -55,10 +56,34 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/dynamoDemoLogin.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n        ddb.get({\n            TableName: 'users',\n            Key: { 'username': event.username }\n        }).promise().then(function (data) {\n            if (event.password == data.Item.password) {\n                callback(null, { \"message\": data.Item.authtoken.message });\n            } else {\n                callback(null, { \"AuthToken\": \"bad password\" + JSON.stringify(data) });\n            }\n        }).catch(function (err) {\n    \n            callback(null, { \"message\": \"some weird error: \" + err });\n        });\n        \n/*\n    ddb.query({\n        TableName: 'users'\n        , ExpressionAttributeValues: { ':username': 'TEST', ':favoriteFood': 'padThai' }, KeyConditionExpression: ' S :username and  S :favoriteFood', FilterExpression: 'password S :favoriteFood'\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\n\n    ddb.query({\n        TableName: 'users'\n    }).promise().then(function (data) {\n\n        callback(null, { \"message\": JSON.stringify(data) });\n    }).catch(function (err) {\n        //handle error\n        callback(null, { \"message\": err });\n    });\n\n    */\n\n    /*\n        ddb.scan({\n            TableName: 'users'\n        }).promise().then(function (data) {\n             callback(null, { \"message\": JSON.stringify(data)});\n        }).catch(function (err) {\n             callback(null, { \"message\": err});\n        });\n        */\n\n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n        ddb.get({\n            TableName: 'users',\n            Key: { 'username': event.username }\n        }).promise().then(function (data) {\n            if (event.password == data.Item.password) {\n                callback(null, { \"message\": data.Item.authtoken });\n            } else {\n                callback(null, { \"AuthToken\": \"bad password\" + JSON.stringify(data) });\n            }\n        }).catch(function (err) {\n    \n            callback(null, { \"message\": \"some weird error: \" + err });\n        });\n        \n/*\n    ddb.query({\n        TableName: 'users'\n        , ExpressionAttributeValues: { ':username': 'TEST', ':favoriteFood': 'padThai' }, KeyConditionExpression: ' S :username and  S :favoriteFood', FilterExpression: 'password S :favoriteFood'\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\n\n    ddb.query({\n        TableName: 'users'\n    }).promise().then(function (data) {\n\n        callback(null, { \"message\": JSON.stringify(data) });\n    }).catch(function (err) {\n        //handle error\n        callback(null, { \"message\": err });\n    });\n\n    */\n\n    /*\n        ddb.scan({\n            TableName: 'users'\n        }).promise().then(function (data) {\n             callback(null, { \"message\": JSON.stringify(data)});\n        }).catch(function (err) {\n             callback(null, { \"message\": err});\n        });\n        */\n\n\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testloginDynamoUserpost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        }
+      },
+      "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0": {
+        "id": "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0",
+        "parent": "91848b40-062a-4494-9d63-c8c87e042976",
+        "name": "addSongs.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "cs480Dynamo/addSongs.js",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n    ddb.update({\n        TableName: 'MusicUsers',\n        ReturnValues: 'ALL_NEW',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\nfunction appendMarkedLocation (personId, location) {\n  return DB.update({\n    TableName: 'people',\n    Key: { id: personId },\n    ReturnValues: 'ALL_NEW',\n    UpdateExpression: 'set #songs = list_append(if_not_exists(#songs, :empty_list), :location)',\n    ExpressionAttributeNames: {\n      '#songs': 'songs'\n    },\n    ExpressionAttributeValues: {\n      ':location': [location],\n      ':empty_list': []\n    }\n  }).promise().then(function (data){\n      callback(null, { \"message\": \"Successfully executed\" });\n  }).catch(function(err){\n      callback(null, { \"message\": \"err: \"+err });\n  })\n}\n\nappendMarkedLocation(event.username, event.song).then(console.log)\n\n\n}\n\n\n/*\n   ddb.update({\n        TableName: 'MusicUsers',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n*/",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1testaddSongpost",
             "config": {}
           }
         ],
@@ -75,9 +100,10 @@
     "rootNode": "91848b40-062a-4494-9d63-c8c87e042976",
     "openFiles": [
       "46d45ab9-af99-402c-9f05-604b2e564de7",
-      "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3"
+      "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
+      "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0"
     ],
-    "currentFileId": "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
+    "currentFileId": "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0",
     "resources": {
       "apigusEast1testcreateDynamoUserpost": {
         "name": "apigusEast1testcreateDynamoUserpost",
@@ -190,6 +216,69 @@
           "stageDeploymentId": "jae24l"
         },
         "globallyEditable": false
+      },
+      "apigusEast1testaddSongpost": {
+        "name": "apigusEast1testaddSongpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 1,
+          "apiName": "test",
+          "apiId": "7rigu1t3sg",
+          "endpointType": "EDGE",
+          "rootResourceId": "8fatwgybp2",
+          "existingResources": {
+            "/createUser": "7ie9s0",
+            "/": "8fatwgybp2",
+            "/loginDynamoUser": "tg4b80",
+            "/createDynamoUser": "znh4pb"
+          },
+          "resourceMode": 0,
+          "resourceName": "addSong",
+          "resourcePath": "/addSong",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 1,
+          "stageName": "testStage",
+          "stageDeploymentId": "ukmv38"
+        },
+        "globallyEditable": false
+      },
+      "ddbMusicUsers": {
+        "name": "ddbMusicUsers",
+        "type": "DynamoDB",
+        "config": {
+          "mode": 1,
+          "operation": "update",
+          "table": {
+            "arn": "arn:aws:dynamodb:us-east-1:997927943405:table/MusicUsers",
+            "name": "MusicUsers",
+            "partitionKey": "Username",
+            "partitionKeyType": "S",
+            "hasSortKey": true,
+            "sortKey": "AuthToken",
+            "sortKeyType": "S",
+            "mode": 1
+          },
+          "parameters": {
+            "Key": {
+              "Username": "USERNAME",
+              "AuthToken": "AUTHtOKEN"
+            },
+            "Item": {},
+            "ExpressionAttributeValues": {
+              ":songs": "test"
+            }
+          },
+          "triggerParams": {},
+          "validator": {
+            "validatableFields": {},
+            "validity": true
+          },
+          "valid": true
+        },
+        "globallyEditable": false
       }
     },
     "customTemplate": {
@@ -224,7 +313,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556650987226
+    "lastSave": 1556653815886
   },
   "VCS_STATE": {
     "provider": "GitHub",

@@ -9,7 +9,7 @@ exports.handler = function (event, context, callback) {
             Key: { 'username': event.username }
         }).promise().then(function (data) {
             if (event.password == data.Item.password) {
-                callback(null, { "message": data.Item.authtoken.message });
+                callback(null, { "message": data.Item.authtoken });
             } else {
                 callback(null, { "AuthToken": "bad password" + JSON.stringify(data) });
             }
