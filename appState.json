@@ -80,7 +80,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/addSongs.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n    ddb.update({\n        TableName: 'MusicUsers',\n        ReturnValues: 'ALL_NEW',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n\nfunction appendMarkedLocation (personId, location) {\n  return DB.update({\n    TableName: 'people',\n    Key: { id: personId },\n    ReturnValues: 'ALL_NEW',\n    UpdateExpression: 'set #songs = list_append(if_not_exists(#songs, :empty_list), :location)',\n    ExpressionAttributeNames: {\n      '#songs': 'songs'\n    },\n    ExpressionAttributeValues: {\n      ':location': [location],\n      ':empty_list': []\n    }\n  }).promise().then(function (data){\n      callback(null, { \"message\": \"Successfully executed\" });\n  }).catch(function(err){\n      callback(null, { \"message\": \"err: \"+err });\n  })\n}\n\nappendMarkedLocation(event.username, event.song).then(console.log)\n\n\n}\n\n\n/*\n   ddb.update({\n        TableName: 'MusicUsers',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n*/",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n ddb.update({\n    TableName: 'MusicUsers',\n     Key: { 'Username': event.username, 'AuthToken': event.authtoken },\n    ReturnValues: 'ALL_NEW',\n    UpdateExpression: 'set #songs = list_append(if_not_exists(#songs, :empty_list), :location)',\n    ExpressionAttributeNames: {\n      '#songs': 'songs'\n    },\n    ExpressionAttributeValues: {\n      ':location': [event.song],\n      ':empty_list': []\n    }\n  }).promise().then(function (data){\n      callback(null, { \"message\": \"Successfully executed\" });\n  }).catch(function(err){\n      callback(null, { \"message\": \"err: \"+err});\n  })\n\n\n\n\n\n}\n\n\n/*\n   ddb.update({\n        TableName: 'MusicUsers',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n*/",
         "triggers": [
           {
             "resourceName": "apigusEast1testaddSongpost",
@@ -313,7 +313,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556653815886
+    "lastSave": 1556656346572
   },
   "VCS_STATE": {
     "provider": "GitHub",
