@@ -5,9 +5,10 @@ exports.handler = function (event, context, callback) {
 
     
  ddb.update({
-    TableName: 'MusicUsers',
-     Key: { 'Username': event.username, 'AuthToken': event.authtoken },
+    TableName: 'users',
+     Key: { 'username': event.username},
     ReturnValues: 'ALL_NEW',
+    ConditionExpression: 'attribute_exists(username)',
     UpdateExpression: 'set #songs = list_append(if_not_exists(#songs, :empty_list), :location)',
     ExpressionAttributeNames: {
       '#songs': 'songs'

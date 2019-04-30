@@ -1,5 +1,4 @@
 let AWS = require('aws-sdk');
-var sha1 = require('sha1');
 const ddb = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = function (event, context, callback) {
@@ -19,8 +18,6 @@ exports.handler = function (event, context, callback) {
         callback(null, { "message": "something went wrong "+err });
         //handle error
     });
-
-    
 
 
 

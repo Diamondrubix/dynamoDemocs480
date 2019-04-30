@@ -10,7 +10,8 @@
         "children": [
           "46d45ab9-af99-402c-9f05-604b2e564de7",
           "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
-          "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0"
+          "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0",
+          "e05f9a9a-2002-4031-96eb-394a9be56520"
         ],
         "isRemovable": false,
         "filePath": "cs480Dynamo"
@@ -24,7 +25,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nvar sha1 = require('sha1');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    var randomToken = Math.random()//sha1(Math.random()); //il figure out how to import libraries later, this project was not about lambda anyway\n\n    ddb.put({\n        TableName: 'users',\n        Item: { \n            'username': event.username,\n            'password': event.password,\n            'authtoken': randomToken}\n    }).promise().then(function (data) {\n        callback(null, { \"message\": \"user: \"+event.username+\" pass \"+event.password+\" returned data: \"+data });\n        //your logic goes here\n    }).catch(function (err) {\n        callback(null, { \"message\": \"something went wrong \"+err });\n        //handle error\n    });\n\n    \n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    var randomToken = Math.random()//sha1(Math.random()); //il figure out how to import libraries later, this project was not about lambda anyway\n\n    ddb.put({\n        TableName: 'users',\n        Item: { \n            'username': event.username,\n            'password': event.password,\n            'authtoken': randomToken}\n    }).promise().then(function (data) {\n        callback(null, { \"message\": \"user: \"+event.username+\" pass \"+event.password+\" returned data: \"+data });\n        //your logic goes here\n    }).catch(function (err) {\n        callback(null, { \"message\": \"something went wrong \"+err });\n        //handle error\n    });\n\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testcreateDynamoUserpost",
@@ -80,10 +81,34 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/addSongs.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n ddb.update({\n    TableName: 'MusicUsers',\n     Key: { 'Username': event.username, 'AuthToken': event.authtoken },\n    ReturnValues: 'ALL_NEW',\n    UpdateExpression: 'set #songs = list_append(if_not_exists(#songs, :empty_list), :location)',\n    ExpressionAttributeNames: {\n      '#songs': 'songs'\n    },\n    ExpressionAttributeValues: {\n      ':location': [event.song],\n      ':empty_list': []\n    }\n  }).promise().then(function (data){\n      callback(null, { \"message\": \"Successfully executed\" });\n  }).catch(function(err){\n      callback(null, { \"message\": \"err: \"+err});\n  })\n\n\n\n\n\n}\n\n\n/*\n   ddb.update({\n        TableName: 'MusicUsers',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n*/",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n ddb.update({\n    TableName: 'users',\n     Key: { 'username': event.username},\n    ReturnValues: 'ALL_NEW',\n    ConditionExpression: 'attribute_exists(username)',\n    UpdateExpression: 'set #songs = list_append(if_not_exists(#songs, :empty_list), :location)',\n    ExpressionAttributeNames: {\n      '#songs': 'songs'\n    },\n    ExpressionAttributeValues: {\n      ':location': [event.song],\n      ':empty_list': []\n    }\n  }).promise().then(function (data){\n      callback(null, { \"message\": \"Successfully executed\" });\n  }).catch(function(err){\n      callback(null, { \"message\": \"err: \"+err});\n  })\n\n\n\n\n\n}\n\n\n/*\n   ddb.update({\n        TableName: 'MusicUsers',\n        Key: { 'Username': event.username, 'AuthToken': event.authtoken }\n        , ExpressionAttributeValues: { ':songs': 'test' }\n    }).promise().then(function (data) {\n        //your logic goes here\n    }).catch(function (err) {\n        //handle error\n    });\n*/",
         "triggers": [
           {
             "resourceName": "apigusEast1testaddSongpost",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        }
+      },
+      "e05f9a9a-2002-4031-96eb-394a9be56520": {
+        "id": "e05f9a9a-2002-4031-96eb-394a9be56520",
+        "parent": "91848b40-062a-4494-9d63-c8c87e042976",
+        "name": "getSongs.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "cs480Dynamo/getSongs.js",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n\n    ddb.query({\n        TableName: 'users'\n        , ExpressionAttributeValues: { ':username': event.username }\n    }).promise().then(function (data) {\n        callback(null, { \"message\": data.Item.songs });\n    }).catch(function (err) {\n        callback(null, { \"message\": \"some weird error: \" + err });\n    });\n\n\n\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1testgetSongspost",
             "config": {}
           }
         ],
@@ -101,9 +126,10 @@
     "openFiles": [
       "46d45ab9-af99-402c-9f05-604b2e564de7",
       "e8c8bc0f-1f9a-4abe-9f0f-cb95b63f13e3",
-      "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0"
+      "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0",
+      "e05f9a9a-2002-4031-96eb-394a9be56520"
     ],
-    "currentFileId": "7c256f6a-fa5b-4e11-b53e-4bfdcbf032c0",
+    "currentFileId": "e05f9a9a-2002-4031-96eb-394a9be56520",
     "resources": {
       "apigusEast1testcreateDynamoUserpost": {
         "name": "apigusEast1testcreateDynamoUserpost",
@@ -175,11 +201,8 @@
             "Key": {},
             "Item": {},
             "ExpressionAttributeValues": {
-              ":username": "TEST",
-              ":favoriteFood": "padThai"
-            },
-            "KeyConditionExpression": " S :username and  S :favoriteFood",
-            "FilterExpression": "password S :favoriteFood"
+              ":username": "USER"
+            }
           },
           "triggerParams": {},
           "validator": {
@@ -279,6 +302,35 @@
           "valid": true
         },
         "globallyEditable": false
+      },
+      "apigusEast1testgetSongspost": {
+        "name": "apigusEast1testgetSongspost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 1,
+          "apiName": "test",
+          "apiId": "7rigu1t3sg",
+          "endpointType": "EDGE",
+          "rootResourceId": "8fatwgybp2",
+          "existingResources": {
+            "/addSong": "2bqauo",
+            "/createUser": "7ie9s0",
+            "/": "8fatwgybp2",
+            "/loginDynamoUser": "tg4b80",
+            "/createDynamoUser": "znh4pb"
+          },
+          "resourceMode": 0,
+          "resourceName": "getSongs",
+          "resourcePath": "/getSongs",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 1,
+          "stageName": "testStage",
+          "stageDeploymentId": "erohbj"
+        },
+        "globallyEditable": false
       }
     },
     "customTemplate": {
@@ -313,7 +365,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556656346572
+    "lastSave": 1556658309796
   },
   "VCS_STATE": {
     "provider": "GitHub",
