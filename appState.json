@@ -105,7 +105,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "cs480Dynamo/getSongs.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    \n\n    ddb.query({\n        TableName: 'users'\n        , ExpressionAttributeValues: { ':username': event.username }\n    }).promise().then(function (data) {\n        callback(null, { \"message\": data.Item.songs });\n    }).catch(function (err) {\n        callback(null, { \"message\": \"some weird error: \" + err });\n    });\n\n\n\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n\n ddb.get({\n            TableName: 'users',\n            Key: { 'username': event.username }\n        }).promise().then(function (data) {\n            callback(null, { \"message\": data.Item.songs });\n            \n        }).catch(function (err) {\n            callback(null, { \"message\": \"some weird error: \" + err });\n        });\n\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1testgetSongspost",
@@ -365,7 +365,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1556658309796
+    "lastSave": 1556658469781
   },
   "VCS_STATE": {
     "provider": "GitHub",
